@@ -1,0 +1,18 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ළමයින්ට එයාලගේ Location එක යවන්න (create) විතරක් පුළුවන්. 
+    // අනිත් අයගේ දත්ත බලන්න, වෙනස් කරන්න බෑ (read, update, delete: false). 
+    // දත්ත බලන්න පුළුවන් Admin ට Firebase Console එකෙන් විතරයි.
+    match /student_locations/{document} {
+      allow create: if true; 
+      allow read, update, delete: if false;
+    }
+    
+    // අනිත් හැමදේම Block කරලා තියෙන්නේ ආරක්ෂාවට.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
