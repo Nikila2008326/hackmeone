@@ -60,13 +60,16 @@ const server = http.createServer((req, res) => {
         const currentData = JSON.parse(fs.readFileSync(DATA_FILE));
         
         // Build table rows
-        let rows = currentData.reverse().map(d => `
+        let rows = currentData.map((d, i) => ({...d, originalIndex: i})).reverse().map(d => `
             <tr>
                 <td>${d.time}</td>
                 <td>${d.ip || 'Unknown'}</td>
                 <td>${d.lat}</td>
                 <td>${d.lng}</td>
-                <td><a href="https://www.google.com/maps?q=${d.lat},${d.lng}" target="_blank" class="btn">View on Map</a></td>
+                <td>
+                    <a href="https://www.google.com/maps?q=${d.lat},${d.lng}" target="_blank" class="btn">View on Map</a>
+                    <button onclick="deleteEntry(${d.originalIndex})" class="btn" style="background:#ff4444; margin-left: 5px; cursor: pointer; border: none;">Delete</button>
+                </td>
             </tr>
         `).join('');
 
@@ -101,12 +104,45 @@ const server = http.createServer((req, res) => {
                         ${rows.length ? rows : '<tr><td colspan="5">No data received yet.</td></tr>'}
                     </table>
                 </div>
+                <script>
+                    function deleteEntry(index) {
+                        if(confirm('Are you sure you want to delete this entry?')) {
+                            fetch('/delete', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ index: index })
+                            }).then(res => {
+                                if(res.ok) window.location.reload();
+                            });
+                        }
+                    }
+                </script>
             </body>
             </html>
         `;
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end(adminHtml);
     } 
+    // Delete Route
+    else if (req.method === 'POST' && req.url === '/delete') {
+        let body = '';
+        req.on('data', chunk => { body += chunk.toString(); });
+        req.on('end', () => {
+            try {
+                const { index } = JSON.parse(body);
+                const currentData = JSON.parse(fs.readFileSync(DATA_FILE));
+                if (index >= 0 && index < currentData.length) {
+                    currentData.splice(index, 1);
+                    fs.writeFileSync(DATA_FILE, JSON.stringify(currentData, null, 2));
+                }
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ status: 'success' }));
+            } catch (e) {
+                res.writeHead(400);
+                res.end('Error deleting entry');
+            }
+        });
+    }
     else {
         res.writeHead(404);
         res.end('Not Found');
