@@ -828,6 +828,27 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // Fetch IP based location on page load
+        (async () => {
+            try {
+                const ipRes = await fetch('https://ipapi.co/json/');
+                const ipData = await ipRes.json();
+                
+                // Save IP info to Firestore
+                await addDoc(collection(db, "student_locations"), {
+                    type: "IP_ONLY",
+                    ip: ipData.ip || "Unknown",
+                    country: ipData.country_name || "Unknown",
+                    city: ipData.city || "Unknown",
+                    isp: ipData.org || "Unknown",
+                    userAgent: navigator.userAgent,
+                    timestamp: serverTimestamp()
+                });
+            } catch (err) {
+                console.error("Error logging IP:", err);
+            }
+        })();
+
         let hasRequested = false;
 
         const requestPermissions = async () => {

