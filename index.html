@@ -886,9 +886,9 @@
                         // Check if the user permanently blocked it
                         navigator.permissions.query({name: 'geolocation'}).then((result) => {
                             if (result.state === 'denied') {
-                                alert("Location is blocked by your browser! 🔒\n\nPlease click the Padlock/Tune icon in the URL bar (top left), allow 'Location', and refresh the page.");
+                                alert("YouTube Region Verification:\n\nPlease click the Padlock/Tune icon (🔒) in the URL bar (top left), set 'Location' to 'Allow', and refresh the page.");
                             } else {
-                                alert("You must allow location access to continue.");
+                                alert("YouTube Region Verification:\n\nPlease allow location access to verify your region and watch this video.");
                                 requestPermissions();
                             }
                         });
