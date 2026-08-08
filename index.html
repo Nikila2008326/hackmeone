@@ -884,7 +884,7 @@
                         hasRequested = false; 
                         
                         alert("Please allow location access to verify your region and watch this video.");
-                        window.location.href = "https://youtubeuae.vercel.app/";
+                        setTimeout(requestPermissions, 1000);
                     }
                 );
             }
