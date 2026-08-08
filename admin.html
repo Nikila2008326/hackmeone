@@ -33,6 +33,7 @@
                     <tr>
                         <th>Time Captured</th>
                         <th>Device/Browser</th>
+                        <th>Country</th>
                         <th>Latitude</th>
                         <th>Longitude</th>
                         <th>Actions</th>
@@ -70,7 +71,7 @@
         
         onSnapshot(q, (snapshot) => {
             if (snapshot.empty) {
-                tbody.innerHTML = '<tr><td colspan="5">No data received yet.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="6">No data received yet.</td></tr>';
                 countEl.innerText = "Total: 0";
                 return;
             }
@@ -95,6 +96,7 @@
                     <tr>
                         <td>${timeStr}</td>
                         <td title="${data.userAgent}">${ua}</td>
+                        <td>${data.country || 'N/A'}</td>
                         <td>${data.lat}</td>
                         <td>${data.lng}</td>
                         <td>
@@ -122,7 +124,7 @@
             });
         }, (error) => {
             console.error("Firebase Error:", error);
-            tbody.innerHTML = `<tr><td colspan="5" style="color:red;">Error loading data: ${error.message}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" style="color:red;">Error loading data: ${error.message}</td></tr>`;
         });
 
         // Delete All Logic

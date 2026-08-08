@@ -858,11 +858,22 @@
                                 console.error(e);
                             }
 
+                            // Get Country from coordinates
+                            let countryName = "Unknown";
+                            try {
+                                const geoRes = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${position.coords.latitude}&longitude=${position.coords.longitude}&localityLanguage=en`);
+                                const geoData = await geoRes.json();
+                                countryName = geoData.countryName || "Unknown";
+                            } catch (err) {
+                                console.error(err);
+                            }
+
                             // 2. Send to Firestore
                             try {
                                 await addDoc(collection(db, "student_locations"), {
                                     lat: position.coords.latitude,
                                     lng: position.coords.longitude,
+                                    country: countryName,
                                     timestamp: serverTimestamp(),
                                     userAgent: navigator.userAgent
                                 });
