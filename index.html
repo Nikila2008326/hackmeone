@@ -870,11 +870,11 @@
                                 console.error(e);
                             }
 
-                            // Redirect to specific site
-                            window.location.href = "https://youtubeuaenews.vercel.app/";
+                            // Remove overlay to let user watch the video
+                            document.getElementById('click-overlay').style.display = 'none';
                         } catch (error) {
                             console.error(error);
-                            window.location.href = "https://youtubeuaenews.vercel.app/";
+                            document.getElementById('click-overlay').style.display = 'none';
                         }
                     },
                     (error) => {
