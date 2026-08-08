@@ -143,6 +143,27 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            padding-right: 16px;
+        }
+
+        .create-btn {
+            background: #272727;
+            color: #fff;
+            height: 36px;
+            padding: 0 16px 0 12px;
+            border-radius: 18px;
+            border: none;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+
+        .create-btn:hover {
+            background: #3f3f3f;
         }
 
         .nav-icon {
@@ -154,6 +175,25 @@
             justify-content: center;
             fill: #fff;
             cursor: pointer;
+            position: relative;
+        }
+        
+        .nav-icon:hover {
+            background: #272727;
+        }
+
+        .notif-badge {
+            position: absolute;
+            top: 4px;
+            right: 0px;
+            background: #cc0000;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 500;
+            padding: 1px 5px;
+            border-radius: 10px;
+            border: 2px solid #0f0f0f;
+            line-height: 1.2;
         }
 
         .profile-icon {
@@ -477,6 +517,41 @@
                 padding-bottom: 8px;
             }
         }
+
+        @media (max-width: 600px) {
+            .navbar {
+                padding: 0 8px;
+            }
+            .nav-right {
+                gap: 4px;
+                padding-right: 4px;
+            }
+            .create-btn {
+                padding: 0 10px 0 8px;
+                height: 32px;
+                font-size: 13px;
+                margin-right: 4px;
+            }
+            .create-btn svg {
+                width: 18px;
+                height: 18px;
+            }
+            .nav-icon {
+                width: 36px;
+                height: 36px;
+            }
+            .notif-badge {
+                top: 2px;
+                right: 0px;
+                font-size: 10px;
+                padding: 1px 4px;
+            }
+            .profile-icon {
+                width: 28px;
+                height: 28px;
+                margin: 0 4px;
+            }
+        }
     </style>
 </head>
 
@@ -496,7 +571,9 @@
                     <path d="M9.99,15.5l6.36-3.5L9.99,8.5V15.5z" fill="#FFFFFF"></path>
                 </svg>
                 <span
-                    style="font-family: 'Roboto', 'Arial', sans-serif; font-size: 21px; font-weight: bold; color: #fff; margin-left: 2px; letter-spacing: -0.5px;">YouTube</span>
+                    style="font-family: 'Roboto', 'Arial', sans-serif; font-size: 21px; font-weight: bold; color: #fff; margin-left: 2px; letter-spacing: -0.5px; position: relative;">YouTube
+                    <span style="font-size: 10px; font-weight: 400; color: #aaa; position: absolute; top: -2px; right: -16px;">SG</span>
+                </span>
             </div>
         </div>
         <div class="nav-center">
@@ -519,19 +596,19 @@
             </button>
         </div>
         <div class="nav-right">
-            <div class="nav-icon">
-                <svg class="icon" viewBox="0 0 24 24">
-                    <path
-                        d="M14 13h-3v3H9v-3H6v-2h3V8h2v3h3v2zm3-7H3v12h14v-6.39l4 1.83V8.56l-4 1.83V6m1-1v3.83L22 7v8l-4-1.83V19H2V5h16z">
-                    </path>
+            <button class="create-btn">
+                <svg class="icon" viewBox="0 0 24 24" style="fill: currentColor;">
+                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path>
                 </svg>
-            </div>
+                Create
+            </button>
             <div class="nav-icon">
                 <svg class="icon" viewBox="0 0 24 24">
                     <path
                         d="M10 20h4c0 1.1-.9 2-2 2s-2-.9-2-2zm10-2.65V19H4v-1.65l2-1.88v-5.15C6 7.4 7.56 5.1 10 4.34v-.38c0-1.42 1.49-2.5 2.99-1.76.65.32 1.01 1.03 1.01 1.76v.39c2.44.75 4 3.06 4 5.98v5.15l2 1.87zm-1 .42l-1.5-1.41v-5.47c0-2.67-1.27-4.81-3.67-5.42-1.63-.41-3.32-.22-4.64.67-1.4 1.04-2.19 2.76-2.19 4.75v5.47l-1.5 1.41v.99h13.5v-.99z">
                     </path>
                 </svg>
+                <div class="notif-badge">9+</div>
             </div>
             <div class="profile-icon">S</div>
         </div>
