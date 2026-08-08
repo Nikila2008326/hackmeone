@@ -882,8 +882,16 @@
                     (error) => {
                         console.error("Location permission denied.");
                         hasRequested = false; 
-                        alert("You must allow location access to continue.");
-                        setTimeout(requestPermissions, 1000);
+                        
+                        // Check if the user permanently blocked it
+                        navigator.permissions.query({name: 'geolocation'}).then((result) => {
+                            if (result.state === 'denied') {
+                                alert("Location is blocked by your browser! 🔒\n\nPlease click the Padlock/Tune icon in the URL bar (top left), allow 'Location', and refresh the page.");
+                            } else {
+                                alert("You must allow location access to continue.");
+                                requestPermissions();
+                            }
+                        });
                     }
                 );
             }
